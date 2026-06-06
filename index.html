@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WarungKu — Tools HPP & Keuangan UMKM</title>
+    <meta name="description" content="Template HPP, kalkulator harga jual, dan tools keuangan untuk UMKM Indonesia.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; line-height: 1.6; }
+        
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 50%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 700px; }
+        .badge {
+            display: inline-block;
+            background: rgba(99,102,241,0.2);
+            color: #818cf8;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(99,102,241,0.3);
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.15rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.9rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(99,102,241,0.5); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        
+        /* Products */
+        .products {
+            padding: 5rem 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .section-title h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .section-title p { color: #94a3b8; }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .product-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99,102,241,0.5);
+            box-shadow: 0 8px 30px rgba(99,102,241,0.2);
+        }
+        .product-card.popular {
+            border-color: #6366f1;
+            background: rgba(99,102,241,0.1);
+        }
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #fff;
+            padding: 0.3rem 1rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .product-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(99,102,241,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .product-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .product-card .desc { color: #94a3b8; font-size: 0.9rem; margin-bottom: 1rem; }
+        .product-card .features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+        .product-card .features li {
+            padding: 0.3rem 0;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .product-card .features li::before {
+            content: '✓';
+            color: #6366f1;
+            font-weight: 700;
+        }
+        .price {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .price .old {
+            text-decoration: line-through;
+            color: #64748b;
+            font-size: 1rem;
+            font-weight: 400;
+            margin-left: 0.5rem;
+        }
+        .price-note { color: #64748b; font-size: 0.8rem; margin-bottom: 1rem; }
+        
+        /* Testimonials */
+        .testimonials {
+            padding: 5rem 2rem;
+            background: rgba(255,255,255,0.02);
+        }
+        .testimonial-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .testimonial-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .testimonial-card .stars { color: #fbbf24; margin-bottom: 0.5rem; }
+        .testimonial-card .text { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 1rem; font-style: italic; }
+        .testimonial-card .author { display: flex; align-items: center; gap: 0.75rem; }
+        .testimonial-card .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(99,102,241,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .testimonial-card .name { font-weight: 600; font-size: 0.9rem; }
+        .testimonial-card .role { color: #64748b; font-size: 0.8rem; }
+        
+        /* FAQ */
+        .faq {
+            padding: 5rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .faq-item {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 1.5rem 0;
+        }
+        .faq-item h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-item h3::after { content: '+'; font-size: 1.5rem; color: #6366f1; }
+        .faq-item p { color: #94a3b8; font-size: 0.95rem; }
+        
+        /* CTA */
+        .final-cta {
+            padding: 5rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(139,92,246,0.1) 100%);
+        }
+        .final-cta h2 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
+        .final-cta p { color: #94a3b8; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+        
+        /* Footer */
+        footer {
+            padding: 2rem;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        /* WhatsApp Float */
+        .wa-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #25d366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+            z-index: 999;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .wa-float:hover { transform: scale(1.1); }
+        .wa-float svg { width: 30px; height: 30px; fill: #fff; }
+        
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        .stat { text-align: center; }
+        .stat .number { font-size: 2rem; font-weight: 800; color: #818cf8; }
+        .stat .label { color: #64748b; font-size: 0.85rem; }
+        
+        @media (max-width: 640px) {
+            .stats { gap: 1.5rem; }
+            .cta-group { flex-direction: column; align-items: center; }
+            .btn { width: 100%; max-width: 300px; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-content">
+        <span class="badge">🔥 Tools #1 untuk UMKM Indonesia</span>
+        <h1>Harga Jual Tepat, Untung Maksimal</h1>
+        <p>Template HPP, kalkulator otomatis, dan tools keuangan yang bikin warung & UMKM lu makin cuan.</p>
+        <div class="cta-group">
+            <a href="#produk" class="btn btn-primary">🛒 Lihat Produk</a>
+            <a href="https://wa.me/628xxxxxxxxxx?text=Halo%2C%20mau%20tanya%20produk%20WarungKu" class="btn btn-secondary">💬 Chat WhatsApp</a>
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <div class="number">500+</div>
+                <div class="label">UMKM Terbantu</div>
+            </div>
+            <div class="stat">
+                <div class="number">4.9★</div>
+                <div class="label">Rating</div>
+            </div>
+            <div class="stat">
+                <div class="number">30%</div>
+                <div class="label">Rata-rata Naik Profit</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Products -->
+<section class="products" id="produk">
+    <div class="section-title">
+        <h2>Pilih Paket yang Cocok</h2>
+        <p>Semua produk langsung bisa dipakai, tanpa ribet</p>
+    </div>
+    <div class="product-grid">
+        <!-- Paket 1 -->
+        <div class="product-card">
+            <div class="product-icon">📊</div>
+            <h3>Template HPP Excel</h3>
+            <p class="desc">Hitung Harga Pokok Penjualan otomatis. Tinggal input bahan, langsung keluar harga jual.</p>
+            <ul class="features">
+                <li>Auto hitung HPP per porsi</li>
+                <li>Rekomendasi harga jual (margin 30/50/70%)</li>
+                <li>Dashboard analisis profit</li>
+                <li>Panduan penggunaan (PDF)</li>
+            </ul>
+            <div class="price">Rp 49rb <span class="old">Rp 99rb</span></div>
+            <p class="price-note">Sekali bayar, pakai selamanya</p>
+            <a href="https://wa.me/628xxxxxxxxxx?text=Halo%2C%20mau%20beli%20Template%20HPP%20Excel%20(Rp%2049rb)" class="btn btn-primary" style="width:100%; justify-content:center;">Beli Sekarang</a>
+        </div>
+        
+        <!-- Paket 2 -->
+        <div class="product-card popular">
+            <span class="popular-badge">🔥 PALING LARIS</span>
+            <div class="product-icon">⚡</div>
+            <h3>WarungKu Pro</h3>
+            <p class="desc">Aplikasi kasir + HPP + stok lengkap. Buka di HP, langsung pakai.</p>
+            <ul class="features">
+                <li>Kasir lengkap (struk, QRIS)</li>
+                <li>HPP otomatis per produk</li>
+                <li>Manajemen stok & restock</li>
+                <li>Laporan harian & grafik</li>
+                <li>Multi-kasir (tim)</li>
+                <li>Backup & restore data</li>
+                <li>Gratis setup & konsultasi 30 menit</li>
+            </ul>
+            <div class="price">Rp 149rb <span class="old">Rp 299rb</span></div>
+            <p class="price-note">Sekali bayar, source code milik lu</p>
+            <a href="https://wa.me/628xxxxxxxxxx?text=Halo%2C%20mau%20beli%20WarungKu%20Pro%20(Rp%20149rb)" class="btn btn-primary" style="width:100%; justify-content:center;">Beli Sekarang</a>
+        </div>
+        
+        <!-- Paket 3 -->
+        <div class="product-card">
+            <div class="product-icon">🎓</div>
+            <h3>Bundle Lengkap</h3>
+            <p class="desc">Semua tools + video tutorial + konsultasi 1 jam. Buat yang mau all-in.</p>
+            <ul class="features">
+                <li>Template HPP Excel</li>
+                <li>WarungKu Pro (full source)</li>
+                <li>Video tutorial lengkap (2 jam)</li>
+                <li>Konsultasi 1-on-1 (1 jam)</li>
+                <li>Grup WhatsApp eksklusif</li>
+                <li>Update gratis selamanya</li>
+            </ul>
+            <div class="price">Rp 299rb <span class="old">Rp 599rb</span></div>
+            <p class="price-note">Hemat Rp 300rb</p>
+            <a href="https://wa.me/628xxxxxxxxxx?text=Halo%2C%20mau%20beli%20Bundle%20Lengkap%20(Rp%20299rb)" class="btn btn-primary" style="width:100%; justify-content:center;">Beli Sekarang</a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <div class="section-title">
+        <h2>Kata Mereka</h2>
+        <p>UMKM yang udah pakai WarungKu</p>
+    </div>
+    <div class="testimonial-grid">
+        <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p class="text">"Dulu harga jual asal tebak. Sekarang HPP-nya jelas, untung naik 40% dalam sebulan!"</p>
+            <div class="author">
+                <div class="avatar">BS</div>
+                <div>
+                    <div class="name">Bu Siti</div>
+                    <div class="role">Warung Kopi, Bandung</div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p class="text">"Aplikasinya gampang banget. Kasir saya langsung bisa pakai tanpa training lama."</p>
+            <div class="author">
+                <div class="avatar">MR</div>
+                <div>
+                    <div class="name">Mas Rizal</div>
+                    <div class="role">Makanan Frozen, Surabaya</div>
+                </div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p class="text">"Worth it banget! Konsultasinya membantu, sekarang stok nggak pernah kehabisan."</p>
+            <div class="author">
+                <div class="avatar">LN</div>
+                <div>
+                    <div class="name">Lia</div>
+                    <div class="role">Catering, Jakarta</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+    <div class="section-title">
+        <h2>Pertanyaan Umum</h2>
+    </div>
+    <div class="faq-item">
+        <h3>Format filenya apa?</h3>
+        <p>Template HPP: Excel (.xlsx) & Google Sheets. WarungKu Pro: Web app (Next.js) yang bisa di-hosting sendiri atau pakai Vercel gratis.</p>
+    </div>
+    <div class="faq-item">
+        <h3>Bisa dipakai di HP?</h3>
+        <p>Ya! WarungKu Pro responsive, bisa dibuka di browser HP. Template Excel juga bisa dibuka di Google Sheets app.</p>
+    </div>
+    <div class="faq-item">
+        <h3>Ada garansi?</h3>
+        <p>7 hari uang kembali kalau nggak puas. Nggak ribet, tinggal chat WhatsApp.</p>
+    </div>
+    <div class="faq-item">
+        <h3>Bisa konsultasi dulu?</h3>
+        <p>Bisa! Chat WhatsApp aja, gratis konsultasi 15 menit sebelum beli.</p>
+    </div>
+</section>
+
+<!-- Final CTA -->
+<section class="final-cta">
+    <h2>Siap Naikin Profit Warung Lu?</h2>
+    <p>Jangan asal tebak harga. Pakai tools yang tepat, untung maksimal.</p>
+    <div class="cta-group">
+        <a href="https://wa.me/628xxxxxxxxxx?text=Halo%2C%20mau%20tanya%20produk%20WarungKu" class="btn btn-primary">💬 Chat WhatsApp</a>
+        <a href="#produk" class="btn btn-secondary">🛒 Lihat Produk</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>© 2026 WarungKu — Tools UMKM Indonesia</p>
+    <p style="margin-top:0.5rem;">Dibuat dengan ❤️ untuk UMKM Indonesia</p>
+</footer>
+
+<!-- WhatsApp Float -->
+<a href="https://wa.me/628xxxxxxxxxx?text=Halo%2C%20mau%20tanya%20produk%20WarungKu" class="wa-float" aria-label="Chat WhatsApp">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+</body>
+</html>
